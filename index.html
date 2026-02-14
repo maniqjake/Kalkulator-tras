@@ -340,12 +340,12 @@
                             <p id="displayTotalPrice" class="text-sm font-bold text-emerald-400">0 PLN</p>
                         </div>
                         <div class="bg-slate-700/50 rounded p-2">
-                            <p class="text-slate-400 text-[10px]">Za KM</p>
+                            <p class="text-slate-400 text-[10px]">Z podjazdem</p>
                             <p id="pricePerKm" class="text-sm font-bold text-amber-400">0 PLN</p>
                         </div>
-                        <div class="bg-cyan-900/50 rounded p-2 border border-cyan-600/30">
-                            <p class="text-cyan-400 text-[10px]">Bez podlotu</p>
-                            <p id="rateWithoutStartResult" class="text-sm font-bold text-cyan-300">0 PLN/km</p>
+                        <div class="bg-slate-700/50 rounded p-2">
+                            <p class="text-slate-400 text-[10px]">Bez podjazdu</p>
+                            <p id="rateWithoutStartResult" class="text-sm font-bold text-amber-400">0 PLN/km</p>
                         </div>
                     </div>
                 </div>
@@ -1330,11 +1330,12 @@
             document.getElementById('rateWithoutStartUnit').textContent = `${currentCurrency}/km`;
             
             // Update results box
-            document.getElementById('rateWithoutStartResult').textContent = rateWithoutStart.toFixed(2) + ' ' + currentCurrency + '/km';
+            document.getElementById('rateWithoutStartResult').textContent = rateWithoutStart.toFixed(2) + ' ' + currentCurrency;
             
             // Color comparison with expected rate
             const rateBox = document.getElementById('rateWithoutStartBox');
             const rateDisplay = document.getElementById('rateWithoutStartDisplay');
+            const rateWithoutStartResult = document.getElementById('rateWithoutStartResult');
             
             if (expectedRate > 0 && rateWithoutStart > 0) {
                 if (rateWithoutStart < expectedRate) {
@@ -1343,12 +1344,18 @@
                     rateDisplay.classList.add('text-red-400');
                     rateBox.classList.remove('border-cyan-600/50', 'bg-cyan-900/50', 'border-green-500', 'bg-green-900/30');
                     rateBox.classList.add('border-red-500', 'bg-red-900/30');
+                    // Update Wyniki section
+                    rateWithoutStartResult.classList.remove('text-amber-400', 'text-green-400');
+                    rateWithoutStartResult.classList.add('text-red-400');
                 } else {
                     // Above or equal to expected - GREEN
                     rateDisplay.classList.remove('text-cyan-300', 'text-red-400');
                     rateDisplay.classList.add('text-green-400');
                     rateBox.classList.remove('border-cyan-600/50', 'bg-cyan-900/50', 'border-red-500', 'bg-red-900/30');
                     rateBox.classList.add('border-green-500', 'bg-green-900/30');
+                    // Update Wyniki section
+                    rateWithoutStartResult.classList.remove('text-amber-400', 'text-red-400');
+                    rateWithoutStartResult.classList.add('text-green-400');
                 }
             } else {
                 // Reset to default
@@ -1356,6 +1363,9 @@
                 rateDisplay.classList.add('text-cyan-300');
                 rateBox.classList.remove('border-red-500', 'bg-red-900/30', 'border-green-500', 'bg-green-900/30');
                 rateBox.classList.add('border-cyan-600/50', 'bg-cyan-900/50');
+                // Reset Wyniki section
+                rateWithoutStartResult.classList.remove('text-red-400', 'text-green-400');
+                rateWithoutStartResult.classList.add('text-amber-400');
             }
         }
 
