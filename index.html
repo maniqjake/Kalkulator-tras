@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalkulator</title>
+    <title>Kalkulator by Kamil</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
@@ -54,21 +54,19 @@
         .map-tab-btn.active { background: linear-gradient(to right, #3b82f6, #10b981); color: white; }
         #tmsTabBtn.active { background: linear-gradient(to right, #f59e0b, #ef4444); }
         #driversListBtn.active { box-shadow: 0 0 0 2px #818cf8; }
+        #notesBtn.active { box-shadow: 0 0 0 2px #f59e0b; }
+        #driversTable { table-layout: auto; width: 100%; }
         #driversTable input, #driversTable select {
             background: #334155; border: 1px solid #475569; border-radius: 4px;
-            padding: 4px 6px; color: white; width: 100%; font-size: 11px;
+            padding: 4px 6px; color: white; font-size: 11px; width: 100%;
         }
         #driversTable input:focus, #driversTable select:focus {
             outline: none; border-color: #6366f1;
         }
         #driversTable td { padding: 4px; border: 1px solid #475569; }
         #driversTable tr:hover td { background: #334155; }
-        .status-wolny { background: #22c55e !important; color: white; }
-        .status-w-trasie { background: #3b82f6 !important; color: white; }
-        .status-zaladowany { background: #f59e0b !important; color: black; }
-        .status-rozladowany { background: #8b5cf6 !important; color: white; }
-        .status-awaria { background: #ef4444 !important; color: white; }
-        .status-urlop { background: #64748b !important; color: white; }
+        #driversTable tr:hover td { background: #334155; }
+
     </style>
 </head>
 <body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen text-white">
@@ -83,18 +81,24 @@
 
         <!-- Zakładki -->
         <div class="bg-slate-800/50 rounded-lg p-2 border border-slate-700 mb-3">
-            <div class="flex items-center gap-1.5 flex-wrap">
-                <div id="tabsContainer" class="flex items-center gap-1.5 flex-wrap">
-                    <button class="tab-btn active px-3 py-1.5 rounded text-xs font-bold uppercase border border-slate-600" data-tab="1" onclick="switchTab(1)" oncontextmenu="renameTab(event, 1)">📋 <span class="tab-name">Trasa 1</span></button>
+            <div class="flex flex-col gap-2">
+                <div class="flex items-center gap-2">
+                    <button id="driversListBtn" onclick="toggleDriversList()" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 px-3 py-1.5 rounded text-xs font-bold uppercase border border-indigo-500 transition flex items-center gap-1">
+                        🚛 Lista Kierowców
+                    </button>
+                    <button id="notesBtn" onclick="toggleNotes()" class="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 px-3 py-1.5 rounded text-xs font-bold uppercase border border-yellow-500 transition flex items-center gap-1">
+                        📝 Notatki
+                    </button>
                 </div>
-                <button onclick="addNewTab()" class="bg-slate-700 hover:bg-slate-600 px-2 py-1.5 rounded text-xs font-medium transition flex items-center gap-1 border border-slate-600">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                    Nowa
-                </button>
-                <div class="w-px h-6 bg-slate-600 mx-1"></div>
-                <button id="driversListBtn" onclick="toggleDriversList()" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 px-3 py-1.5 rounded text-xs font-bold uppercase border border-indigo-500 transition flex items-center gap-1">
-                    🚛 Lista Kierowców
-                </button>
+                <div class="flex items-center gap-1.5 flex-wrap">
+                    <div id="tabsContainer" class="flex items-center gap-1.5 flex-wrap">
+                        <button class="tab-btn active px-3 py-1.5 rounded text-xs font-bold uppercase border border-slate-600" data-tab="1" onclick="switchTab(1)" oncontextmenu="renameTab(event, 1)">📋 <span class="tab-name">Trasa 1</span></button>
+                    </div>
+                    <button onclick="addNewTab()" class="bg-slate-700 hover:bg-slate-600 px-2 py-1.5 rounded text-xs font-medium transition flex items-center gap-1 border border-slate-600">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        Nowa
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -240,7 +244,7 @@
 
                 <!-- Podsumowanie -->
                 <div class="bg-gradient-to-r from-purple-900/30 to-pink-900/30 rounded-lg p-2.5 border border-purple-700/50">
-                    <div class="flex items-center gap-2 text-xs">
+                    <div class="flex items-center gap-2 text-xs flex-wrap">
                         <div class="flex items-center gap-1.5 bg-slate-800/70 rounded px-2 py-1.5 border border-slate-600">
                             <span class="text-blue-400 font-bold" id="totalKmDisplay">0.00</span>
                             <span class="text-slate-400">km</span>
@@ -250,44 +254,35 @@
                             <span class="text-emerald-400 font-bold" id="pricePerKmDisplay">0.00</span>
                             <span id="pricePerKmUnit" class="text-slate-400">PLN/km</span>
                         </div>
-                        <div class="hidden sm:flex items-center gap-1 ml-auto text-slate-500 font-mono" id="calcBreakdown">Oblicz trasę</div>
-                    </div>
-                </div>
-                
-                <!-- Podsumowanie bez startu -->
-                <div class="bg-gradient-to-r from-cyan-900/30 to-blue-900/30 rounded-lg p-2.5 border border-cyan-700/50">
-                    <div class="flex items-center gap-2 text-xs">
-                        <div class="flex items-center gap-1 text-cyan-400">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
-                            <span class="font-medium">Bez podlotu:</span>
-                        </div>
-                        <div class="flex items-center gap-1.5 bg-slate-800/70 rounded px-2 py-1.5 border border-slate-600">
+                        <span class="text-slate-500">|</span>
+                        <div class="flex items-center gap-1.5 bg-slate-700/70 rounded px-2 py-1 border border-slate-600">
                             <span class="text-cyan-400 font-bold" id="kmWithoutStartDisplay">0.00</span>
                             <span class="text-slate-400">km</span>
                         </div>
-                        <span class="text-slate-500">×</span>
-                        <div class="flex items-center gap-1.5 bg-slate-800/70 rounded px-2 py-1.5 border border-slate-600">
-                            <span class="text-amber-400 font-bold" id="priceWithoutStartDisplay">0.00</span>
-                            <span id="priceWithoutStartCurrency" class="text-slate-400">PLN</span>
-                        </div>
-                        <span class="text-slate-500">=</span>
-                        <div id="rateWithoutStartBox" class="flex items-center gap-1.5 bg-cyan-900/50 rounded px-2 py-1.5 border border-cyan-600/50 transition-all">
+                        <span class="text-slate-500">→</span>
+                        <div id="rateWithoutStartBox" class="flex items-center gap-1.5 bg-cyan-900/50 rounded px-2 py-1 border border-cyan-600/50 transition-all">
                             <span class="text-cyan-300 font-bold" id="rateWithoutStartDisplay">0.00</span>
                             <span id="rateWithoutStartUnit" class="text-slate-400">PLN/km</span>
                         </div>
+                        <div class="hidden sm:flex items-center gap-1 ml-auto text-slate-500 font-mono" id="calcBreakdown">Oblicz trasę</div>
                     </div>
+                    <!-- Hidden elements for compatibility -->
+                    <span class="hidden" id="priceWithoutStartDisplay">0.00</span>
+                    <span class="hidden" id="priceWithoutStartCurrency">PLN</span>
                 </div>
-
+                
                 <!-- Przyciski akcji -->
-                <div class="flex gap-2">
-                    <button onclick="calculateRoute()" id="calculateBtn" class="flex-1 bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 py-2.5 rounded-lg font-bold text-sm transition transform hover:scale-[1.01] flex items-center justify-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
-                        <span id="calculateBtnText">Oblicz trasę</span>
-                    </button>
-                    <button onclick="exportToGoogleMaps()" id="exportBtn" class="bg-gradient-to-r from-red-500 to-yellow-500 hover:from-red-600 hover:to-yellow-600 py-2.5 px-4 rounded-lg font-bold text-sm transition transform hover:scale-[1.01] flex items-center justify-center gap-2" title="Otwórz w Google Maps">
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-                        <span class="hidden sm:inline">Google Maps</span>
-                    </button>
+                <div class="bg-slate-800/50 rounded-lg p-2.5 border border-slate-700">
+                    <div class="flex gap-2">
+                        <button onclick="calculateRoute()" id="calculateBtn" class="flex-1 bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 py-2.5 rounded-lg font-bold text-sm transition transform hover:scale-[1.01] flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+                            <span id="calculateBtnText">Oblicz trasę</span>
+                        </button>
+                        <button onclick="exportToGoogleMaps()" id="exportBtn" class="bg-gradient-to-r from-red-500 to-yellow-500 hover:from-red-600 hover:to-yellow-600 py-2.5 px-4 rounded-lg font-bold text-sm transition transform hover:scale-[1.01] flex items-center justify-center gap-2" title="Otwórz w Google Maps">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                            <span class="hidden sm:inline">Google Maps</span>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Porównanie czasu -->
@@ -331,7 +326,7 @@
                     <div id="segmentResults" class="space-y-1.5 mb-3 max-h-40 overflow-y-auto"></div>
                     
                     <!-- Siatka podsumowania -->
-                    <div class="grid grid-cols-4 gap-1.5 text-center">
+                    <div class="grid grid-cols-5 gap-1.5 text-center">
                         <div class="bg-slate-700/50 rounded p-2">
                             <p class="text-slate-400 text-[10px]">Dystans</p>
                             <p id="totalDistance" class="text-sm font-bold text-white">0 km</p>
@@ -348,13 +343,45 @@
                             <p class="text-slate-400 text-[10px]">Za KM</p>
                             <p id="pricePerKm" class="text-sm font-bold text-amber-400">0 PLN</p>
                         </div>
+                        <div class="bg-cyan-900/50 rounded p-2 border border-cyan-600/30">
+                            <p class="text-cyan-400 text-[10px]">Bez podlotu</p>
+                            <p id="rateWithoutStartResult" class="text-sm font-bold text-cyan-300">0 PLN/km</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Lista Kierowców Panel -->
-        <div id="driversListPanel" class="hidden mt-3">
+        <!-- Side-by-side container for Notes and Drivers List -->
+        <div id="sideBySlideContainer" class="mt-3 grid lg:grid-cols-2 gap-3">
+            <!-- Notes Panel -->
+            <div id="notesPanel" class="hidden">
+                <div class="bg-slate-800/50 rounded-lg p-3 border border-yellow-600/50 h-full">
+                    <div class="flex items-center justify-between mb-2">
+                        <h2 class="text-sm font-semibold flex items-center gap-2">
+                            📝 Notatki
+                        </h2>
+                        <div class="flex items-center gap-2">
+                            <button onclick="clearNotes()" class="bg-red-600/50 hover:bg-red-600 px-2 py-1 rounded text-xs font-medium transition flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                Wyczyść
+                            </button>
+                            <button onclick="toggleNotes()" class="bg-slate-600 hover:bg-slate-500 px-3 py-1 rounded text-xs font-medium transition">
+                                Zamknij
+                            </button>
+                        </div>
+                    </div>
+                    <textarea id="notesTextarea" placeholder="Wpisz swoje notatki tutaj..." 
+                        class="w-full h-40 bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 resize-y"
+                        oninput="saveNotes()"></textarea>
+                    <div class="mt-2 text-xs text-slate-400">
+                        <span id="notesCharCount">0</span> znaków
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista Kierowców Panel -->
+            <div id="driversListPanel" class="hidden">
             <div class="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
                 <div class="flex items-center justify-between mb-3">
                     <h2 class="text-sm font-semibold flex items-center gap-2">
@@ -374,16 +401,15 @@
                 <div class="overflow-x-auto">
                     <table class="w-full text-xs" id="driversTable">
                         <thead>
-                            <tr class="bg-slate-700/50 text-slate-300">
-                                <th class="px-2 py-2 text-left font-semibold border border-slate-600 min-w-[120px]">Kierowca</th>
-                                <th class="px-2 py-2 text-left font-semibold border border-slate-600 min-w-[100px]">Ciągnik</th>
-                                <th class="px-2 py-2 text-left font-semibold border border-slate-600 min-w-[100px]">Naczepa</th>
-                                <th class="px-2 py-2 text-left font-semibold border border-slate-600 min-w-[100px]">Nadwozie</th>
-                                <th class="px-2 py-2 text-left font-semibold border border-slate-600 min-w-[120px]">Start</th>
-                                <th class="px-2 py-2 text-left font-semibold border border-slate-600 min-w-[120px]">Destynacja</th>
-                                <th class="px-2 py-2 text-left font-semibold border border-slate-600 min-w-[100px]">Status</th>
-                                <th class="px-2 py-2 text-left font-semibold border border-slate-600 min-w-[150px]">Komentarz</th>
-                                <th class="px-2 py-2 text-center font-semibold border border-slate-600 w-[50px]">Akcje</th>
+                            <tr class="bg-slate-700/50 text-slate-300 text-xs">
+                                <th class="px-2 py-1.5 text-left font-semibold border border-slate-600">Kierowca</th>
+                                <th class="px-2 py-1.5 text-left font-semibold border border-slate-600">Ciągnik</th>
+                                <th class="px-2 py-1.5 text-left font-semibold border border-slate-600">Naczepa</th>
+                                <th class="px-2 py-1.5 text-left font-semibold border border-slate-600">Start</th>
+                                <th class="px-2 py-1.5 text-left font-semibold border border-slate-600">Destynacja</th>
+                                <th class="px-2 py-1.5 text-left font-semibold border border-slate-600">Nadwozie</th>
+                                <th class="px-2 py-1.5 text-left font-semibold border border-slate-600">Status</th>
+                                <th class="px-2 py-1.5 text-center font-semibold border border-slate-600">Akcje</th>
                             </tr>
                         </thead>
                         <tbody id="driversTableBody">
@@ -411,6 +437,7 @@
                     </div>
                 </div>
             </div>
+        </div>
         </div>
     </div>
 
@@ -647,8 +674,16 @@
         }
 
         function addNewTab() {
-            tabCounter++;
-            const newTabId = tabCounter;
+            // Find the next available tab number
+            const existingNumbers = Object.keys(tabs).map(k => parseInt(k)).sort((a, b) => a - b);
+            let newTabId = 1;
+            for (let i = 1; i <= existingNumbers.length + 1; i++) {
+                if (!existingNumbers.includes(i)) {
+                    newTabId = i;
+                    break;
+                }
+            }
+            tabCounter = Math.max(tabCounter, newTabId);
             saveCurrentTabState();
             tabs[newTabId] = { waypoints: {}, enabled: { start: true, A: true, B: true, end: true }, price: 0, currency: 'PLN', speed: 80, expectedRate: 0, name: `Trasa ${newTabId}` };
             const tabsContainer = document.getElementById('tabsContainer');
@@ -1296,6 +1331,9 @@
             document.getElementById('rateWithoutStartDisplay').textContent = rateWithoutStart.toFixed(2);
             document.getElementById('rateWithoutStartUnit').textContent = `${currentCurrency}/km`;
             
+            // Update results box
+            document.getElementById('rateWithoutStartResult').textContent = rateWithoutStart.toFixed(2) + ' ' + currentCurrency + '/km';
+            
             // Color comparison with expected rate
             const rateBox = document.getElementById('rateWithoutStartBox');
             const rateDisplay = document.getElementById('rateWithoutStartDisplay');
@@ -1708,6 +1746,47 @@
             document.body.removeChild(link);
         }
 
+        // Notes Functions
+        let notesContent = '';
+
+        function toggleNotes() {
+            const panel = document.getElementById('notesPanel');
+            const btn = document.getElementById('notesBtn');
+            const isHidden = panel.classList.contains('hidden');
+            
+            panel.classList.toggle('hidden');
+            btn.classList.toggle('active', isHidden);
+            
+            if (isHidden) {
+                // Load saved notes from localStorage
+                const savedNotes = localStorage.getItem('calculatorNotes') || '';
+                document.getElementById('notesTextarea').value = savedNotes;
+                updateCharCount();
+            }
+        }
+
+        function saveNotes() {
+            const textarea = document.getElementById('notesTextarea');
+            notesContent = textarea.value;
+            localStorage.setItem('calculatorNotes', notesContent);
+            updateCharCount();
+        }
+
+        function clearNotes() {
+            if (document.getElementById('notesTextarea').value === '') return;
+            if (confirm('Czy na pewno chcesz wyczyścić notatki?')) {
+                document.getElementById('notesTextarea').value = '';
+                notesContent = '';
+                localStorage.removeItem('calculatorNotes');
+                updateCharCount();
+            }
+        }
+
+        function updateCharCount() {
+            const count = document.getElementById('notesTextarea').value.length;
+            document.getElementById('notesCharCount').textContent = count;
+        }
+
         // Drivers List Functions
         let driversData = [];
         let driverIdCounter = 0;
@@ -1736,8 +1815,7 @@
                 naczepa: '',
                 start: '',
                 destynacja: '',
-                status: 'wolny',
-                komentarz: ''
+                status: 'wolny'
             });
             renderDriversTable();
         }
@@ -1764,20 +1842,26 @@
                     <td><input type="text" value="${driver.kierowca}" onchange="updateDriverField(${driver.id}, 'kierowca', this.value)" placeholder="Imię i nazwisko"></td>
                     <td><input type="text" value="${driver.ciagnik}" onchange="updateDriverField(${driver.id}, 'ciagnik', this.value)" placeholder="Nr rejestracyjny"></td>
                     <td><input type="text" value="${driver.naczepa}" onchange="updateDriverField(${driver.id}, 'naczepa', this.value)" placeholder="Nr naczepy"></td>
-                    <td><input type="text" value="${driver.nadwozie}" onchange="updateDriverField(${driver.id}, 'nadwozie', this.value)" placeholder="Typ nadwozia"></td>
                     <td><input type="text" value="${driver.start}" onchange="updateDriverField(${driver.id}, 'start', this.value)" placeholder="Miasto/Kraj"></td>
                     <td><input type="text" value="${driver.destynacja}" onchange="updateDriverField(${driver.id}, 'destynacja', this.value)" placeholder="Miasto/Kraj"></td>
                     <td>
-                        <select onchange="updateDriverField(${driver.id}, 'status', this.value); this.className = 'status-' + this.value;" class="status-${driver.status}">
-                            <option value="wolny" ${driver.status === 'wolny' ? 'selected' : ''}>Wolny</option>
-                            <option value="w-trasie" ${driver.status === 'w-trasie' ? 'selected' : ''}>W trasie</option>
-                            <option value="zaladowany" ${driver.status === 'zaladowany' ? 'selected' : ''}>Załadowany</option>
-                            <option value="rozladowany" ${driver.status === 'rozladowany' ? 'selected' : ''}>Rozładowany</option>
-                            <option value="awaria" ${driver.status === 'awaria' ? 'selected' : ''}>Awaria</option>
-                            <option value="urlop" ${driver.status === 'urlop' ? 'selected' : ''}>Rezerwacja</option>
+                        <select onchange="updateDriverField(${driver.id}, 'nadwozie', this.value)">
+                            <option value="" ${!driver.nadwozie ? 'selected' : ''}>Wybierz...</option>
+                            <option value="standard" ${driver.nadwozie === 'standard' ? 'selected' : ''}>Standard</option>
+                            <option value="chłodnia" ${driver.nadwozie === 'chłodnia' ? 'selected' : ''}>Chłodnia</option>
+                            <option value="izoterma" ${driver.nadwozie === 'izoterma' ? 'selected' : ''}>Izoterma</option>
                         </select>
                     </td>
-                    <td><input type="text" value="${driver.komentarz}" onchange="updateDriverField(${driver.id}, 'komentarz', this.value)" placeholder="Uwagi..."></td>
+                    <td>
+                        <select onchange="updateDriverField(${driver.id}, 'status', this.value)">
+                            <option value="wolny" ${driver.status === 'wolny' ? 'selected' : ''}>🟢 Wolny</option>
+                            <option value="w-trasie" ${driver.status === 'w-trasie' ? 'selected' : ''}>🔵 W trasie</option>
+                            <option value="zaladowany" ${driver.status === 'zaladowany' ? 'selected' : ''}>🟠 Załadowany</option>
+                            <option value="rozladowany" ${driver.status === 'rozladowany' ? 'selected' : ''}>🟣 Rozładowany</option>
+                            <option value="awaria" ${driver.status === 'awaria' ? 'selected' : ''}>🔴 Awaria</option>
+                            <option value="urlop" ${driver.status === 'urlop' ? 'selected' : ''}>⚫ Rezerwacja</option>
+                        </select>
+                    </td>
                     <td class="text-center">
                         <button onclick="removeDriverRow(${driver.id})" class="text-red-400 hover:text-red-300 p-1 hover:bg-red-900/30 rounded transition">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
@@ -1809,9 +1893,9 @@
                 return;
             }
             
-            const headers = ['Kierowca', 'Ciągnik', 'Naczepa', 'Nadwozie', 'Start', 'Destynacja', 'Status', 'Komentarz'];
+            const headers = ['Kierowca', 'Ciągnik', 'Naczepa', 'Start', 'Destynacja', 'Nadwozie', 'Status'];
             const rows = driversData.map(d => [
-                d.kierowca, d.ciagnik, d.naczepa, d.nadwozie, d.start, d.destynacja, d.status, d.komentarz
+                d.kierowca, d.ciagnik, d.naczepa, d.start, d.destynacja, d.nadwozie, d.status
             ].map(val => `"${(val || '').replace(/"/g, '""')}"`).join(','));
             
             const csv = [headers.join(','), ...rows].join('\n');
@@ -1888,16 +1972,25 @@
                         const rawStatus = (values[6] || 'wolny').toLowerCase().trim();
                         const status = statusMap[rawStatus] || 'wolny';
                         
+                        // Map nadwozie values
+                        const nadwozieMap = {
+                            'standard': 'standard',
+                            'chłodnia': 'chłodnia',
+                            'chlodnia': 'chłodnia',
+                            'izoterma': 'izoterma'
+                        };
+                        const rawNadwozie = (values[5] || '').toLowerCase().trim();
+                        const nadwozie = nadwozieMap[rawNadwozie] || values[5] || '';
+                        
                         importedDrivers.push({
                             id: ++driverIdCounter,
                             kierowca: values[0] || '',
                             ciagnik: values[1] || '',
                             naczepa: values[2] || '',
-                            nadwozie: values[3] || '',
-                            start: values[4] || '',
-                            destynacja: values[5] || '',
-                            status: status,
-                            komentarz: values[7] || ''
+                            start: values[3] || '',
+                            destynacja: values[4] || '',
+                            nadwozie: nadwozie,
+                            status: status
                         });
                     }
                     
