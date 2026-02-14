@@ -403,8 +403,6 @@
                         <thead>
                             <tr class="bg-slate-700/50 text-slate-300 text-xs">
                                 <th class="px-2 py-1.5 text-left font-semibold border border-slate-600">Kierowca</th>
-                                <th class="px-2 py-1.5 text-left font-semibold border border-slate-600">Ciągnik</th>
-                                <th class="px-2 py-1.5 text-left font-semibold border border-slate-600">Naczepa</th>
                                 <th class="px-2 py-1.5 text-left font-semibold border border-slate-600">Start</th>
                                 <th class="px-2 py-1.5 text-left font-semibold border border-slate-600">Destynacja</th>
                                 <th class="px-2 py-1.5 text-left font-semibold border border-slate-600">Nadwozie</th>
@@ -1810,11 +1808,9 @@
             driversData.push({
                 id,
                 kierowca: '',
-                ciagnik: '',
-                nadwozie: '',
-                naczepa: '',
                 start: '',
                 destynacja: '',
+                nadwozie: '',
                 status: 'wolny'
             });
             renderDriversTable();
@@ -1840,8 +1836,6 @@
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><input type="text" value="${driver.kierowca}" onchange="updateDriverField(${driver.id}, 'kierowca', this.value)" placeholder="Imię i nazwisko"></td>
-                    <td><input type="text" value="${driver.ciagnik}" onchange="updateDriverField(${driver.id}, 'ciagnik', this.value)" placeholder="Nr rejestracyjny"></td>
-                    <td><input type="text" value="${driver.naczepa}" onchange="updateDriverField(${driver.id}, 'naczepa', this.value)" placeholder="Nr naczepy"></td>
                     <td><input type="text" value="${driver.start}" onchange="updateDriverField(${driver.id}, 'start', this.value)" placeholder="Miasto/Kraj"></td>
                     <td><input type="text" value="${driver.destynacja}" onchange="updateDriverField(${driver.id}, 'destynacja', this.value)" placeholder="Miasto/Kraj"></td>
                     <td>
@@ -1893,9 +1887,9 @@
                 return;
             }
             
-            const headers = ['Kierowca', 'Ciągnik', 'Naczepa', 'Start', 'Destynacja', 'Nadwozie', 'Status'];
+            const headers = ['Kierowca', 'Start', 'Destynacja', 'Nadwozie', 'Status'];
             const rows = driversData.map(d => [
-                d.kierowca, d.ciagnik, d.naczepa, d.start, d.destynacja, d.nadwozie, d.status
+                d.kierowca, d.start, d.destynacja, d.nadwozie, d.status
             ].map(val => `"${(val || '').replace(/"/g, '""')}"`).join(','));
             
             const csv = [headers.join(','), ...rows].join('\n');
@@ -1969,7 +1963,7 @@
                             'urlop': 'urlop'
                         };
                         
-                        const rawStatus = (values[6] || 'wolny').toLowerCase().trim();
+                        const rawStatus = (values[4] || 'wolny').toLowerCase().trim();
                         const status = statusMap[rawStatus] || 'wolny';
                         
                         // Map nadwozie values
@@ -1979,16 +1973,14 @@
                             'chlodnia': 'chłodnia',
                             'izoterma': 'izoterma'
                         };
-                        const rawNadwozie = (values[5] || '').toLowerCase().trim();
-                        const nadwozie = nadwozieMap[rawNadwozie] || values[5] || '';
+                        const rawNadwozie = (values[3] || '').toLowerCase().trim();
+                        const nadwozie = nadwozieMap[rawNadwozie] || values[3] || '';
                         
                         importedDrivers.push({
                             id: ++driverIdCounter,
                             kierowca: values[0] || '',
-                            ciagnik: values[1] || '',
-                            naczepa: values[2] || '',
-                            start: values[3] || '',
-                            destynacja: values[4] || '',
+                            start: values[1] || '',
+                            destynacja: values[2] || '',
                             nadwozie: nadwozie,
                             status: status
                         });
